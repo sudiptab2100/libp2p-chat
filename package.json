@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "p2p chat using libp2p",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -21,5 +22,11 @@
   "bugs": {
     "url": "https://github.com/sudiptab2100/libp2p-chat/issues"
   },
-  "homepage": "https://github.com/sudiptab2100/libp2p-chat#readme"
+  "homepage": "https://github.com/sudiptab2100/libp2p-chat#readme",
+  "dependencies": {
+    "@chainsafe/libp2p-noise": "^15.0.0",
+    "@libp2p/mplex": "^10.0.20",
+    "@libp2p/tcp": "^9.0.22",
+    "libp2p": "^1.4.2"
+  }
 }
