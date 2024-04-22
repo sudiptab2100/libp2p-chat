@@ -3,6 +3,10 @@ import { tcp } from '@libp2p/tcp';
 import { noise } from '@chainsafe/libp2p-noise';
 import { mplex } from '@libp2p/mplex';
 import readline from 'readline';
+import { multiaddr } from '@multiformats/multiaddr';
+
+
+const chatProtocol = "/chat/1.0.0";
 
 const rl = readline.createInterface({
     input: process.stdin,
@@ -15,6 +19,13 @@ const question = (query) => {
             resolve(answer);
         });
     });
+};
+
+const send = async (node, peer_multiaddress_str, msg_str) => {
+    const peer_multiaddress = multiaddr(peer_multiaddress_str);
+    const stream = await node.dialProtocol(peer_multiaddress, chatProtocol);
+    // await stream.sink(msg_str);
+    await stream.close();
 };
 
 const getNode = async () => {
@@ -30,6 +41,10 @@ const getNode = async () => {
         streamMuxers: [mplex()]
     });
     
+    node.handle(chatProtocol, async ({ stream }) => {
+        console.log(stream);
+    })
+    
     return node;
 }
 
@@ -43,9 +58,10 @@ const main = async () => {
         console.log(addr.toString())
     });
     
-    const peeNext = await question('Enter the multiaddress: ');
-    var msg = "";
+    const peerNext = await question('Enter the multiaddress: ');
+    var msg = "START";
     while (msg != "exit") {
+        send(node, peerNext, msg);
         msg = await question('Enter the message: ');
     }
     rl.close();
