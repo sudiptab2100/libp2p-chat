@@ -36,6 +36,13 @@ const getNode = async () => {
         streamToConsole(stream);
     });
     
+    node.addEventListener('self:peer:update', () => {
+        console.log('listening on addresses:');
+        node.getMultiaddrs().forEach((addr) => {
+            console.log(addr.toString())
+        });
+    });
+    
     return node;
 }
 
@@ -68,11 +75,6 @@ const main = async () => {
         await node.dial(relay_addr);
         console.log('relay connected');
     }
-    
-    console.log('listening on addresses:');
-    node.getMultiaddrs().forEach((addr) => {
-        console.log(addr.toString())
-    });
     
     if(isInitiator) {
         const stream = await node.dialProtocol(peer_multiaddr, chatProtocol);
