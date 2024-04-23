@@ -46,6 +46,22 @@ const getNode = async () => {
 }
 
 const main = async () => {
+    const args = process.argv.slice(2);
+    var arg = null;
+    if (args.length > 1) {
+        console.log('Invalid command line argument.');
+        process.exit(1);
+    }
+    else {
+        arg = args[0];
+        if(arg != 'initiator') {
+            console.log('Invalid argument');
+            process.exit(1);
+        }
+    }
+    const isInitiator = arg? true: false;
+    if(isInitiator) console.log('Starting as an Initiator....\n');
+    
     const node = await getNode();
     await node.start();
     console.log('libp2p has started');
