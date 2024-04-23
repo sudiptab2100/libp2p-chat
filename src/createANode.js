@@ -21,11 +21,8 @@ const question = (query) => {
     });
 };
 
-const send = async (node, peer_multiaddress_str, msg_str) => {
-    const peer_multiaddress = multiaddr(peer_multiaddress_str);
-    const stream = await node.dialProtocol(peer_multiaddress, chatProtocol);
+const send = async (stream, msg_str) => {
     // await stream.sink(msg_str);
-    await stream.close();
 };
 
 const getNode = async () => {
@@ -42,8 +39,8 @@ const getNode = async () => {
     });
     
     node.handle(chatProtocol, async ({ stream }) => {
-        console.log(stream);
-    })
+        console.log("stream");
+    });
     
     return node;
 }
@@ -59,14 +56,19 @@ const main = async () => {
     });
     
     const peerNext = await question('Enter the multiaddress: ');
+    const peer_multiaddress = multiaddr(peerNext);
+    const stream = await node.dialProtocol(peer_multiaddress, chatProtocol);
+    console.log("dialed the peer");
+    console.log("stream status:", stream.status);
+    
     var msg = "START";
     while (msg != "exit") {
-        send(node, peerNext, msg);
-        msg = await question('Enter the message: ');
+        send(stream, msg);
+        msg = await question('');
     }
-    rl.close();
-    
-    await node.stop()
+    await rl.close();
+    await stream.close();
+    await node.stop();
     console.log('libp2p has stopped');
 }
 
