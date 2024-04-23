@@ -25,6 +25,7 @@
   "homepage": "https://github.com/sudiptab2100/libp2p-chat#readme",
   "dependencies": {
     "@chainsafe/libp2p-noise": "^15.0.0",
+    "@libp2p/circuit-relay-v2": "^1.0.20",
     "@libp2p/mplex": "^10.0.20",
     "@libp2p/tcp": "^9.0.22",
     "@multiformats/multiaddr": "^12.2.1",
