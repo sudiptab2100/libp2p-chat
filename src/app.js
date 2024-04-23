@@ -22,9 +22,12 @@ const question = (query) => {
     });
 };
 
-const send = async (stream, msg_str) => {
-    // await stream.sink(msg_str);
-};
+const send = async (msg_str) => {
+    if(!streamGlob || !msg_str) return;
+    const msg_uint8array = new TextEncoder().encode(msg_str);
+    console.log(msg_uint8array);
+    // await streamGlob.sink(msg_uint8array);
+}
 
 const getNode = async () => {
     const node = await createLibp2p({
@@ -81,9 +84,9 @@ const main = async () => {
         console.log("stream status:", streamGlob.status);
     }
     
-    var msg = "START";
+    var msg = null;
     while (msg != "exit") {
-        await send(streamGlob, msg);
+        await send(msg);
         msg = await question('');
     }
     await rl.close();
