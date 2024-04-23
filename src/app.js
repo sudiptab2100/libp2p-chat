@@ -4,6 +4,7 @@ import { noise } from '@chainsafe/libp2p-noise';
 import { mplex } from '@libp2p/mplex';
 import { multiaddr } from '@multiformats/multiaddr';
 import { stdinToStream, streamToConsole } from './stream.js';
+import { circuitRelayTransport } from '@libp2p/circuit-relay-v2';
 
 
 const chatProtocol = "/chat/1.0.0";
@@ -16,7 +17,10 @@ const getNode = async () => {
                 '/ip4/127.0.0.1/tcp/0'
             ]
         },
-        transports: [tcp()],
+        transports: [
+            tcp(),
+            circuitRelayTransport()
+        ],
         connectionEncryption: [noise()],
         streamMuxers: [mplex()]
     });
