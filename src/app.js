@@ -41,22 +41,23 @@ const getNode = async () => {
 
 const main = async () => {
     const args = process.argv.slice(2);
-    var arg = null;
-    var peer_arg = null;
-    if (args.length != 2 && args.length != 0) {
-        console.log('Invalid command line argument.');
+    const parsedArgs = {};
+    const validArgs = ['dial'];
+    if(args.length % 2 !== 0) {
+        console.log('Invalid command line arguments.');
         process.exit(1);
     }
-    else if(args.length === 2) {
-        arg = args[0];
-        peer_arg = args[1];
-        if(arg != 'dial') {
-            console.log('Invalid argument');
+    for(let i = 0; i < args.length; i += 2) {
+        if(args[i].substring(0, 2) !== '--' || !validArgs.includes(args[i].substring(2))) {
+            console.log('Invalid command line argument.');
             process.exit(1);
         }
+        parsedArgs[args[i].substring(2)] = args[i + 1];
     }
-    const isInitiator = arg? true: false;
+    const isInitiator = parsedArgs['dial']? true: false;
     if(isInitiator) console.log('Starting as an Initiator....\n');
+    
+    const peer_multiaddr = parsedArgs['dial']? multiaddr(parsedArgs['dial']): null;
     
     const node = await getNode();
     await node.start();
@@ -68,8 +69,7 @@ const main = async () => {
     });
     
     if(isInitiator) {
-        const peer_multiaddress = multiaddr(peer_arg);
-        const stream = await node.dialProtocol(peer_multiaddress, chatProtocol);
+        const stream = await node.dialProtocol(peer_multiaddr, chatProtocol);
         stdinToStream(stream);
         streamToConsole(stream);
     }
