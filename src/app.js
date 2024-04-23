@@ -42,7 +42,7 @@ const getNode = async () => {
 const main = async () => {
     const args = process.argv.slice(2);
     const parsedArgs = {};
-    const validArgs = ['dial'];
+    const validArgs = ['dial', 'relay'];
     if(args.length % 2 !== 0) {
         console.log('Invalid command line arguments.');
         process.exit(1);
@@ -58,10 +58,16 @@ const main = async () => {
     if(isInitiator) console.log('Starting as an Initiator....\n');
     
     const peer_multiaddr = parsedArgs['dial']? multiaddr(parsedArgs['dial']): null;
+    const relay_addr = parsedArgs['relay']? multiaddr(parsedArgs['relay']): null;
     
     const node = await getNode();
     await node.start();
     console.log('libp2p has started');
+    
+    if(relay_addr) {
+        await node.dial(relay_addr);
+        console.log('relay connected');
+    }
     
     console.log('listening on addresses:');
     node.getMultiaddrs().forEach((addr) => {
