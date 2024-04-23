@@ -4,10 +4,10 @@ import { noise } from '@chainsafe/libp2p-noise';
 import { mplex } from '@libp2p/mplex';
 import readline from 'readline';
 import { multiaddr } from '@multiformats/multiaddr';
+import { stdinToStream, streamToConsole } from './stream.js';
 
 
 const chatProtocol = "/chat/1.0.0";
-var streamGlob = null;
 
 const rl = readline.createInterface({
     input: process.stdin,
@@ -21,13 +21,6 @@ const question = (query) => {
         });
     });
 };
-
-const send = async (msg_str) => {
-    if(!streamGlob || !msg_str) return;
-    const msg_uint8array = new TextEncoder().encode(msg_str);
-    console.log(msg_uint8array);
-    // await streamGlob.sink(msg_uint8array);
-}
 
 const getNode = async () => {
     const node = await createLibp2p({
@@ -43,8 +36,8 @@ const getNode = async () => {
     });
     
     node.handle(chatProtocol, async ({ stream }) => {
-        if(!streamGlob && stream) console.log('connected');
-        streamGlob = stream;
+        stdinToStream(stream);
+        streamToConsole(stream);
     });
     
     return node;
@@ -79,20 +72,17 @@ const main = async () => {
     if(isInitiator) {
         const peerNext = await question('Enter the multiaddress: ');
         const peer_multiaddress = multiaddr(peerNext);
-        streamGlob = await node.dialProtocol(peer_multiaddress, chatProtocol);
+        const stream = await node.dialProtocol(peer_multiaddress, chatProtocol);
         console.log("dialed the peer");
-        console.log("stream status:", streamGlob.status);
+        console.log("stream status:", stream.status);
+        stdinToStream(stream);
+        streamToConsole(stream);
     }
     
-    var msg = null;
-    while (msg != "exit") {
-        await send(msg);
-        msg = await question('');
-    }
-    await rl.close();
-    await streamGlob.close();
-    await node.stop();
-    console.log('libp2p has stopped');
+    // await rl.close();
+    // await stream.close();
+    // await node.stop();
+    // console.log('libp2p has stopped');
 }
 
 main().then().catch(console.error);
