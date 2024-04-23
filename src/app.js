@@ -21,6 +21,11 @@ const getNode = async () => {
         streamMuxers: [mplex()]
     });
     
+    node.addEventListener('peer:connect', (evt) => {
+        const remotePeer = evt.detail;
+        console.log('connected to: ', remotePeer.toString());
+    });
+    
     node.handle(chatProtocol, async ({ stream }) => {
         stdinToStream(stream);
         streamToConsole(stream);
