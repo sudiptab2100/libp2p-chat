@@ -7,6 +7,7 @@ import { multiaddr } from '@multiformats/multiaddr';
 
 
 const chatProtocol = "/chat/1.0.0";
+var streamGlob = null;
 
 const rl = readline.createInterface({
     input: process.stdin,
@@ -39,7 +40,8 @@ const getNode = async () => {
     });
     
     node.handle(chatProtocol, async ({ stream }) => {
-        console.log("stream");
+        if(!streamGlob && stream) console.log('connected');
+        streamGlob = stream;
     });
     
     return node;
@@ -52,7 +54,7 @@ const main = async () => {
         console.log('Invalid command line argument.');
         process.exit(1);
     }
-    else {
+    else if(args.length === 1) {
         arg = args[0];
         if(arg != 'initiator') {
             console.log('Invalid argument');
@@ -71,19 +73,21 @@ const main = async () => {
         console.log(addr.toString())
     });
     
-    const peerNext = await question('Enter the multiaddress: ');
-    const peer_multiaddress = multiaddr(peerNext);
-    const stream = await node.dialProtocol(peer_multiaddress, chatProtocol);
-    console.log("dialed the peer");
-    console.log("stream status:", stream.status);
+    if(isInitiator) {
+        const peerNext = await question('Enter the multiaddress: ');
+        const peer_multiaddress = multiaddr(peerNext);
+        streamGlob = await node.dialProtocol(peer_multiaddress, chatProtocol);
+        console.log("dialed the peer");
+        console.log("stream status:", streamGlob.status);
+    }
     
     var msg = "START";
     while (msg != "exit") {
-        send(stream, msg);
+        await send(streamGlob, msg);
         msg = await question('');
     }
     await rl.close();
-    await stream.close();
+    await streamGlob.close();
     await node.stop();
     console.log('libp2p has stopped');
 }
