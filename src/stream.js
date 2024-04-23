@@ -21,7 +21,7 @@ export function streamToConsole(stream) {
         source => map(source, buf => uint8ArrayToString(buf.subarray())),
         async function(source) {
             for await (const msg of source) {
-                console.log('> ' + msg.toString().replace('\n', ''));
+                console.log('\x1b[36m%s\x1b[0m', '> ' + msg.toString().replace('\n', ''));
             }
         }
     );

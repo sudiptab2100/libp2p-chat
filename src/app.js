@@ -23,7 +23,8 @@ const getNode = async () => {
     
     node.addEventListener('peer:connect', (evt) => {
         const remotePeer = evt.detail;
-        console.log('connected to: ', remotePeer.toString());
+        console.log('connected to: ' + remotePeer.toString());
+        console.log('\x1b[31m', '\nSTART CHATTING\n', '\x1b[0m');
     });
     
     node.handle(chatProtocol, async ({ stream }) => {
@@ -65,8 +66,6 @@ const main = async () => {
     if(isInitiator) {
         const peer_multiaddress = multiaddr(peer_arg);
         const stream = await node.dialProtocol(peer_multiaddress, chatProtocol);
-        console.log("dialed the peer");
-        console.log("stream status:", stream.status);
         stdinToStream(stream);
         streamToConsole(stream);
     }
