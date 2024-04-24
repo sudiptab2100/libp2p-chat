@@ -88,7 +88,7 @@ const main = async () => {
     }
     
     if(isInitiator) {
-        const stream = await node.dialProtocol(peer_multiaddr, chatProtocol);
+        const stream = await node.dialProtocol(peer_multiaddr, chatProtocol, { runOnTransientConnection: true }); 
         stdinToStream(stream);
         streamToConsole(stream);
     }
