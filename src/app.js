@@ -5,6 +5,9 @@ import { mplex } from '@libp2p/mplex';
 import { multiaddr } from '@multiformats/multiaddr';
 import { stdinToStream, streamToConsole } from './stream.js';
 import { circuitRelayTransport } from '@libp2p/circuit-relay-v2';
+import { identify } from '@libp2p/identify';
+import { webSockets } from '@libp2p/websockets';
+import * as filters from '@libp2p/websockets/filters';
 
 
 const chatProtocol = "/chat/1.0.0";
@@ -14,15 +17,23 @@ const getNode = async () => {
         start: false,
         addresses: {
             listen: [
-                '/ip4/127.0.0.1/tcp/0'
+                '/ip4/0.0.0.0/tcp/0/ws',
+                '/ip4/0.0.0.0/tcp/0',
+                '/'
             ]
         },
         transports: [
             tcp(),
-            circuitRelayTransport()
+            webSockets({
+                filter: filters.all
+            }),
+            circuitRelayTransport({ discoverRelays: 1 })
         ],
         connectionEncryption: [noise()],
-        streamMuxers: [mplex()]
+        streamMuxers: [mplex()],
+        services: {
+            identify: identify()
+        }
     });
     
     node.addEventListener('peer:connect', (evt) => {
@@ -39,7 +50,7 @@ const getNode = async () => {
     node.addEventListener('self:peer:update', () => {
         console.log('listening on addresses:');
         node.getMultiaddrs().forEach((addr) => {
-            console.log(addr.toString())
+            console.log(addr.toString());
         });
     });
     
