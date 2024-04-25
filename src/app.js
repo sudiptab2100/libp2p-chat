@@ -54,10 +54,25 @@ const getNode = async () => {
     );
     
     node.addEventListener('self:peer:update', () => {
-        console.log('listening on addresses:');
+        var addrs = [];
+        var relay_addrs = [];
         node.getMultiaddrs().forEach((addr) => {
-            console.log(addr.toString());
+            const ma = addr.toString();
+            if(ma.includes('p2p-circuit')) relay_addrs.push(ma);
+            else addrs.push(ma);
         });
+        if(addrs.length != 0) {
+            console.log('\nlistening on addresses:');
+            addrs.forEach((addr) => {
+                console.log(addr);
+            });
+        }
+        if(relay_addrs.length != 0) {
+            console.log('\nlistening on relay addresses:');
+            relay_addrs.forEach((relay_addr) => {
+                console.log(relay_addr);
+            });
+        }
     });
     
     return node;
