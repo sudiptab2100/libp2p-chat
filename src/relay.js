@@ -1,5 +1,4 @@
 import { createLibp2p } from 'libp2p';
-import { tcp } from '@libp2p/tcp';
 import { noise } from '@chainsafe/libp2p-noise';
 import { mplex } from '@libp2p/mplex';
 import { circuitRelayServer } from '@libp2p/circuit-relay-v2';
@@ -34,16 +33,20 @@ const getRelayNode = async () => {
         console.log('connected to: ' + remotePeer.toString());
     });
     
+    node.addEventListener('self:peer:update', () => {
+        console.log('relay node listening on addresses:');
+        node.getMultiaddrs().forEach((addr) => {
+            console.log(addr.toString())
+        });
+    });
+    
     return node;
 }
 
-const node = await getRelayNode();
-await node.start();
-console.log('libp2p has started');
+const main = async () => {
+    const node = await getRelayNode();
+    await node.start();
+    console.log('\ncircuit relay node has started');
+}
 
-node.addEventListener('self:peer:update', () => {
-    console.log('relay node listening on addresses:');
-    node.getMultiaddrs().forEach((addr) => {
-        console.log(addr.toString())
-    });
-});
+main();

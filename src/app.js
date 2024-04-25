@@ -42,10 +42,16 @@ const getNode = async () => {
         console.log('\x1b[31m', '\nSTART CHATTING\n', '\x1b[0m');
     });
     
-    node.handle(chatProtocol, async ({ stream }) => {
-        stdinToStream(stream);
-        streamToConsole(stream);
-    });
+    node.handle(
+        chatProtocol, 
+        async ({ connection, stream, protocol }) => {
+            stdinToStream(stream);
+            streamToConsole(stream);
+        },
+        {
+            runOnTransientConnection: true
+        }
+    );
     
     node.addEventListener('self:peer:update', () => {
         console.log('listening on addresses:');
