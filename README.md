@@ -1,6 +1,6 @@
 # libp2p-chat
 
-It is an end-to-end encrypted p2p terminal chat application built using **libp2p**.
+It is an end-to-end encrypted p2p terminal chat application built using **libp2p**. It has relay support for peers behind symmetric NATs.
 
 ## Requirements
 
