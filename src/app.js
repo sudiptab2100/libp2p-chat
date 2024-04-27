@@ -8,6 +8,7 @@ import { circuitRelayTransport } from '@libp2p/circuit-relay-v2';
 import { identify } from '@libp2p/identify';
 import { webSockets } from '@libp2p/websockets';
 import * as filters from '@libp2p/websockets/filters';
+import { yamux } from '@chainsafe/libp2p-yamux';
 
 
 const chatProtocol = "/chat/1.0.0";
@@ -30,7 +31,7 @@ const getNode = async () => {
             circuitRelayTransport({ discoverRelays: 1 })
         ],
         connectionEncryption: [noise()],
-        streamMuxers: [mplex()],
+        streamMuxers: [mplex(), yamux()],
         services: {
             identify: identify()
         }
